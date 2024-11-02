@@ -3,7 +3,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { EstadpCocherasComponent } from './pages/estadp-cocheras/estadp-cocheras.component'; 
 import { inject } from '@angular/core';
 import { AuthService } from './serive/auth.service';
-import { ReportesComponent } from './reportes/reportes.component';
+import { ReporteComponent } from './reportes/reportes.component';
 
 function guardaLogueado(){
     let auth= inject(AuthService);
@@ -35,7 +35,7 @@ export const routes: Routes = [
     },
     {
         path:"reportes",
-        component:ReportesComponent
+        component:ReporteComponent
     },
     {
         path:"registro",
