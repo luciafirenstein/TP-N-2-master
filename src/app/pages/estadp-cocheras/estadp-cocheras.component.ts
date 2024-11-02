@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../serive/auth.service';
 import { CocherasService } from '../../serive/cocheras.service';
 import { Estacionamiento } from '../../interfaces/estacionamiento';
+import Swal from 'sweetalert2';
+import { EstacionamientoService } from '../../serive/estacionamiento.service';
 
 @Component({
   selector: 'app-estadp-cocheras',
@@ -14,6 +16,10 @@ import { Estacionamiento } from '../../interfaces/estacionamiento';
   styleUrl: './estadp-cocheras.component.scss'
 })
 export class EstadpCocherasComponent {
+fila: any;
+cambiarDisponibilidadCochera(arg0: number,$event: MouseEvent) {
+throw new Error('Method not implemented.');
+}
   titulo: string="Parking App";
   header:{ nro:string, disponibilidad: string, ingreso: string, acciones: string}={
     nro: "Nro",
@@ -21,9 +27,14 @@ export class EstadpCocherasComponent {
     ingreso: "Ingreso",
     acciones: "Acciones",
   };
-  filas:(Cochera&{activo: Estacionamiento|null})[]=[];
+  
   auth= inject(AuthService);
   cocheras=inject(CocherasService);
+  filas: Cochera[] = [];
+  siguienteNumero: number = 1;
+  estacionamientos = inject(EstacionamientoService)
+ 
+
 
   ngOnInit(){
     this.traerCocheras().then(filas=>{
@@ -35,40 +46,75 @@ export class EstadpCocherasComponent {
     return this.cocheras.cocheras();
   }
 
-  siguienteNumero: number=1;
-  agregarFila(){
-    this.filas.push({
-      id: this.siguienteNumero,
-      descripcion: '',
-      deshabilitada: false,
-      eliminada: false,
+  agregarFila() {
+    Swal.fire({
+      title: "Ingresa la descripción de la cochera",
+      input: "text",
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return "Ingresa la descripción de la cochera";
+        }
+        return null;
+      }
+    }).then((res) => {
+      if (res.isConfirmed && res.value) { // Aseguramos que haya una descripción ingresada
+        fetch('http://localhost:4000/cocheras/', {
+          method: 'POST',
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + (localStorage.getItem("token") ?? "")
+          },
+          body: JSON.stringify({ descripcion: res.value })
+        }).then(() => this.traerCocheras());
+      }
     });
-    this.siguienteNumero +=1;
   }
-  eliminarFila(cocheraId: number) {
+
+  eliminarFila(cocheraId: number, event: Event) {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d33',
+      cancelButtonColor: '#3085d6',
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then(()=>{
+      this.traerCocheras().then((filas)=>{
+        this.filas=filas;
+      });
+    });
     fetch('http://localhost:4000/cocheras/' + cocheraId,{
       method: 'DELETE',
       headers:{
         Autorization:'Bearer '+ this.auth.getToken(),
       },
-    }).then(()=>{
-      this.traerCocheras().then((filas)=>{
-        this.filas=filas;
-      });
-    });
+    })
   }
-  CambiarDisponibilidadCochera(cocheraId:number){
+
+  CambiarDisponibilidadCochera(cocheraId:number, deshabilitada: boolean, event:Event){
+    if (deshabilitada) {
     fetch('http://localhost:4000/cocheras/' + cocheraId + '/disable', {
       method: 'POST',
       headers:{
         Autorization:'Bearer '+ this.auth.getToken(),
       },
-    }).then(()=>{
-      this.traerCocheras().then((filas)=>{
-        this.filas=filas;
-      });
-    });
+    }).then(()=> this.traerCocheras());
+
+    } else {
+      fetch('http://localhost:4000/cocheras/' + cocheraId + '/disable', {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + (this.auth.getToken() ?? ''),
+        },
+      }).then(() => this.traerCocheras());
+    }
+    event.stopPropagation();
   }
+
+  
   getCocheras(){
     fetch("http://localhost:4000/estado-cocheras",{
       headers:{
@@ -76,4 +122,32 @@ export class EstadpCocherasComponent {
       }
     })
   }
+
+  abrirModalNuevoEstacionamiento(idCochera: number) {
+    console.log("Abriendo modal cochera")
+    Swal.fire({
+      title: "Ingrese la patente del vehiculo ",
+      input: "text",
+      showCancelButton: true,
+      inputValidator: (value) => {
+        if (!value) {
+          return "Ingrese una patente valida";
+        }
+        return
+      },
+    }).then(res => {
+      if (res.isConfirmed) {
+        console.log("Tengo que estacionar la patente", res.value);
+        this.estacionamientos.estacionarAuto(res.value, idCochera).then(() => {
+          this.traerCocheras()
+        })
+      }
+    }
+
+    )
+  }
+
+
 }
+
+        

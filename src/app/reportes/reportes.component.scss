@@ -1,0 +1,47 @@
+@use"./../../../../public/styles/colores.scss";
+@use"./../../../../public/styles/tabla.scss";
+header{
+    justify-content: space-between;
+    display: flex;
+    text-align: center;
+    text-decoration: none;
+    margin-left: 700px;
+}
+#tabla{
+    display:flex;
+    flex-direction: column;
+    text-align: center;
+    #header-tabla{
+        font-size: larger;
+        font-weight: 700;
+        display: grid;
+    }
+    >div{
+        display: grid;
+        grid-template-columns: 50px 1fr 1fr 1fr;
+        border-bottom: 1px solid black;
+        text-align: center;
+    }
+    
+}
+.logo{
+    width: 45px;
+    height: 45px;
+   align-items: center;
+}
+p{
+    color: rgb(190, 119, 25);
+    font-family: sans-serif;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-top: 25px;
+}
+h1{
+    margin-right: 900px;
+    margin: 40px;
+    font-size: 40px;
+    color: rgb(133, 63, 6);
+    font-family:  sans-serif;
+    font-weight: bolder;
+    text-decoration: none;
+}
