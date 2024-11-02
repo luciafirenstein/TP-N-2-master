@@ -1,0 +1,13 @@
+<header>
+    <h1>Parking App</h1>
+    <nav>
+        <a [routerLink]="['/estado-cocheras']" routerLinkActive="activa" ]> Estados cocheras</a>
+        @if(esAdmin){
+            <a [routerLink]="['/reportes']" routerLinkActive="activa" ]> Estados cocheras</a>
+            <a>Precios</a>
+        }
+        <a>Usuario</a>
+    </nav>
+    <button (click)="abrirModal()">Modal test</button>
+    <p>Resultado es:{{resultadoInput}}</p>
+</header>

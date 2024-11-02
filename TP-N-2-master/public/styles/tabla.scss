@@ -1,0 +1,26 @@
+@use"./colores.scss";
+
+.tabla{
+    display: flex;
+    flex-direction: column;
+    margin: 20px auto;
+    .header-tabla{
+        font-size: larger;
+        font-weight: bold;
+    }
+}
+
+.disponible{
+    background-color: colores.$color-correcto;
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: colores.$color-texto-invertido;
+    pointer-events: none;
+}
+.ocupado{
+    background-color: colores.$color-error;
+    padding: 5px 10px;
+    border-radius: 15px;
+    color: colores.$color-texto-invertido;
+    pointer-events: none;
+}
