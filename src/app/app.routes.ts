@@ -1,6 +1,6 @@
 import { RedirectCommand, Router, Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
-import { EstadpCocherasComponent } from './pages/estadp-cocheras/estadp-cocheras.component'; 
+import { EstadoCocherasComponent } from './pages/estadp-cocheras/estadp-cocheras.component'; 
 import { inject } from '@angular/core';
 import { AuthService } from './serive/auth.service';
 import { ReporteComponent } from './reportes/reportes.component';
@@ -25,7 +25,7 @@ export const routes: Routes = [
     },
     {
         path:"estado-cocheras",
-        component:EstadpCocherasComponent,
+        component:EstadoCocherasComponent,
         canActivate: [guardaLogueado]
     },
     {

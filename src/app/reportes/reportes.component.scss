@@ -1,11 +1,24 @@
-@use"./../../../../public/styles/colores.scss";
-@use"./../../../../public/styles/tabla.scss";
-header{
+@use"./../../../public/styles/colores.scss";
+@use"./../../../public/styles/tabla.scss";
+
+header.p{
+    color: colores.$color-texto;
     justify-content: space-between;
+    margin-top: 25px;
+}
+header{
     display: flex;
-    text-align: center;
+    justify-content: space-between;
+    align-items: center;
+    background-color: colores.$color-principal;
+    padding: 10px;
+    margin-bottom: 50px;
+}
+a{
     text-decoration: none;
-    margin-left: 700px;
+    color: colores.$color-texto;
+    font-weight: 700;
+    margin-bottom: 25px;  
 }
 #tabla{
     display:flex;
@@ -29,19 +42,8 @@ header{
     height: 45px;
    align-items: center;
 }
-p{
-    color: rgb(190, 119, 25);
-    font-family: sans-serif;
-    justify-content: space-between;
-    font-weight: bold;
-    margin-top: 25px;
-}
 h1{
-    margin-right: 900px;
-    margin: 40px;
-    font-size: 40px;
-    color: rgb(133, 63, 6);
-    font-family:  sans-serif;
-    font-weight: bolder;
-    text-decoration: none;
+    color: colores.$color-texto;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 50px;
 }

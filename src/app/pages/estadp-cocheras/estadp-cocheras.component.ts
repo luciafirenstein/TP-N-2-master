@@ -15,118 +15,68 @@ import { EstacionamientoService } from '../../serive/estacionamiento.service';
   templateUrl: './estadp-cocheras.component.html',
   styleUrl: './estadp-cocheras.component.scss'
 })
-export class EstadpCocherasComponent {
-fila: any;
-cambiarDisponibilidadCochera(arg0: number,$event: MouseEvent) {
-throw new Error('Method not implemented.');
-}
-  titulo: string="Parking App";
-  header:{ nro:string, disponibilidad: string, ingreso: string, acciones: string}={
-    nro: "Nro",
-    disponibilidad: "Disponibilidad",
-    ingreso: "Ingreso",
-    acciones: "Acciones",
-  };
-  
-  auth= inject(AuthService);
-  cocheras=inject(CocherasService);
-  filas: Cochera[] = [];
-  siguienteNumero: number = 1;
-  estacionamientos = inject(EstacionamientoService)
- 
 
-
-  ngOnInit(){
-    this.traerCocheras().then(filas=>{
-      this.filas= filas;
-    })
-  }
-
-  traerCocheras(){
-    return this.cocheras.cocheras();
-  }
-
-  agregarFila() {
-    Swal.fire({
-      title: "Ingresa la descripción de la cochera",
-      input: "text",
-      showCancelButton: true,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Ingresa la descripción de la cochera";
-        }
-        return null;
+export class EstadoCocherasComponent {
+   header: { nro:string, disponibilidad: string, ingreso:string, acciones: string} = {
+      nro: 'N°',
+      disponibilidad: 'DISPONIBILIDAD',
+      ingreso: 'INGRESO',
+      acciones: 'ACCIONES',
+   };
+   filas:(Cochera & {activo: Estacionamiento|null}) []=[];
+   ngOnInit(){
+    this.traerCocheras();
+   }
+   auth = inject(AuthService);
+   cocheras = inject(CocherasService);
+   estacionamientos = inject(EstacionamientoService)
+   traerCocheras(){
+      return this.cocheras.cocheras().then(cocheras => {
+        this.filas = [];
+        for (let cochera of cocheras) {
+          this.estacionamientos.buscarEstacionamientoActivo(cochera.id).then(estacionamiento => {
+            this.filas.push({
+              ...cochera,
+              activo: estacionamiento,
+            });
+          })
+        }})
       }
-    }).then((res) => {
-      if (res.isConfirmed && res.value) { // Aseguramos que haya una descripción ingresada
-        fetch('http://localhost:4000/cocheras/', {
-          method: 'POST',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": "Bearer " + (localStorage.getItem("token") ?? "")
-          },
-          body: JSON.stringify({ descripcion: res.value })
-        }).then(() => this.traerCocheras());
-      }
+   siguienteNumero: number = 1;
+   agregarFila(){
+    this.filas.push({
+      id: this.siguienteNumero,
+      descripcion: '',
+      deshabilitada: false,
+      eliminada: false,
+      activo: null
     });
-  }
-
-  eliminarFila(cocheraId: number, event: Event) {
-    Swal.fire({
-      title: '¿Estás seguro?',
-      text: 'Esta acción no se puede deshacer.',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: 'Sí, eliminar',
-      cancelButtonText: 'Cancelar'
-    }).then(()=>{
-      this.traerCocheras().then((filas)=>{
-        this.filas=filas;
-      });
-    });
-    fetch('http://localhost:4000/cocheras/' + cocheraId,{
-      method: 'DELETE',
-      headers:{
-        Autorization:'Bearer '+ this.auth.getToken(),
-      },
-    })
-  }
-
-  CambiarDisponibilidadCochera(cocheraId:number, deshabilitada: boolean, event:Event){
-    if (deshabilitada) {
-    fetch('http://localhost:4000/cocheras/' + cocheraId + '/disable', {
-      method: 'POST',
-      headers:{
-        Autorization:'Bearer '+ this.auth.getToken(),
-      },
-    }).then(()=> this.traerCocheras());
-
+    this.siguienteNumero +=1;
+   }; 
+   eliminarFila(index:number,event:Event){
+    event.stopPropagation
+   this.filas.splice(index,1);
+   }
+   cambiarDisponibilidad(numeroFila:number,event:Event){
+    event.stopPropagation()
+    if(this.filas[numeroFila].deshabilitada === true){
+      this.filas[numeroFila].deshabilitada = false;
     } else {
-      fetch('http://localhost:4000/cocheras/' + cocheraId + '/disable', {
-        method: "POST",
-        headers: {
-          Authorization: "Bearer " + (this.auth.getToken() ?? ''),
-        },
-      }).then(() => this.traerCocheras());
+      this.filas[numeroFila].deshabilitada = true;
     }
-    event.stopPropagation();
-  }
 
-  
-  getCocheras(){
-    fetch("http://localhost:4000/estado-cocheras",{
+  }
+   getCocheras(){
+    fetch("http://localhost:4000/cocheras "),{
       headers:{
-        authorization: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXNBZG1pbiI6MSwiaWF0IjoxNzI2Njc0MDQ5LCJleHAiOjE3MjcyNzg4NDl9.HvpH2jjP5Sjl_HVQM9aF6OWCzir61elZsGjLx5BZGUU"
-      }
-    })
-  }
-
-  abrirModalNuevoEstacionamiento(idCochera: number) {
-    console.log("Abriendo modal cochera")
+        authorization: ' Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZ…5Mjl9.4tZ5YuPXudY4LUmDeEvqqPSXjXhD1VO2AF3CAaEDq7Q'
+      },
+    }
+   }
+   abrirModalNuevoEstacionamiento(idCochera:number){
+    console.log("Abriendo modal cochera",idCochera);
     Swal.fire({
-      title: "Ingrese la patente del vehiculo ",
+      title: "Ingrese la patente del vehiculo",
       input: "text",
       showCancelButton: true,
       inputValidator: (value) => {
@@ -134,20 +84,18 @@ throw new Error('Method not implemented.');
           return "Ingrese una patente valida";
         }
         return
-      },
-    }).then(res => {
-      if (res.isConfirmed) {
-        console.log("Tengo que estacionar la patente", res.value);
-        this.estacionamientos.estacionarAuto(res.value, idCochera).then(() => {
+      }
+    }).then(res=>{
+      if(res.isConfirmed){
+        console.log("Tengo que estacionar la patente",res.value);
+        this.estacionamientos.estacionarAuto(res.value,idCochera);
+        this.estacionamientos.estacionarAuto(res.value,idCochera).then(()=>{
+          //actualizar cocheras
           this.traerCocheras()
         })
-      }
-    }
-
-    )
-  }
-
-
+    }})
+    
+  }
 }
 
         

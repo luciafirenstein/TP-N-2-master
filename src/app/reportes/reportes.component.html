@@ -1,10 +1,12 @@
-html:<header>
-    <p>REPORTES</p>
-    <p>ESTADO COCHERAS</p>
-    <p>INICIAR SESION</p>
-    <a href=""><img src="imagenes/logo.png" alt="logo" class="logo"></a>
-</header>
+<header>
     <h1>PARKING APP</h1>
+    <a [routerLink]="['/estado']" class="reporte">ESTADO COCHERAS</a>
+    <a [routerLink]="['/reportes']" class="reporte">REPORTE</a>
+    <a [routerLink]="['/login']" class="reporte">INICIAR SESIÓN</a>
+    
+    <a href="#"><img src="imagenes/icono persona.png" alt="logo" class="logo"></a>
+</header>
+
     
     <div id="tabla">
         <div id="header-tabla">

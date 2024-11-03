@@ -1,26 +1,10 @@
 @use"./../../../../public/styles/colores.scss";
 @use"./../../../../public/styles/tabla.scss";
 
-h1{
-    color: rgb(19, 19, 19);
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 50px;
-}
-#tabla{
-    display: flex;
-    flex-direction: column;
-    #header-tabla{
-        font-size: larger;
-    }
-    >div{
-        display: grid;
-        grid-template-columns: 180px 1fr 1fr 1fr;
-        border-bottom: 1px solid black;
-        padding: 20px;
-        margin-left: 50px;
-        margin-right: 50px;
-        font-size: 20px;
-    }
+header.p{
+    color: colores.$color-texto;
+    justify-content: space-between;
+    margin-top: 25px;
 }
 header{
     display: flex;
@@ -30,27 +14,91 @@ header{
     padding: 10px;
     margin-bottom: 50px;
 }
+.reporte{
+    color: colores.$color-texto;
+    font-family: sans-serif;
+    justify-content: space-between;
+    font-weight: bold;
+    margin-top: 25px;
+}
+.logo{
+    width: 60px;
+    height: 60px;
+   align-items: center;
+   
+}
 a{
     text-decoration: none;
-    color:rgb(19, 19, 19);
-    font-size: 22px;
-    font-weight: bolder;
+    color: colores.$color-texto;
+    font-weight: 700;
+    margin-bottom: 25px;  
 }
-img{
-    height: 60px;
-    margin-right: 50px;
+button{
+    color: black;
+    font-weight: 600;
+    justify-content: space-between;
+    display: flex; 
+    cursor: pointer;  
 }
+
+h1{
+    color: colores.$color-texto;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 50px;
+}
+
+div{
+    margin-top: 20px;
+    text-align: center;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+#tabla{
+    display:flex;
+    flex-direction: column;
+    text-align: center;
+    #header-tabla{
+        font-size: larger;
+        font-weight: 700;
+        display: grid;
+    }
+    >div, >button{
+        display: grid;
+        grid-template-columns: 50px 1fr 1fr 1fr;
+        border-bottom: 1px solid black;
+        text-align: center;
+    }
+    
+}
+
 footer{
-    display: flex;
-    justify-content:end;
+    margin-top: 20px;
+    margin-left: 1010px;
+    text-align: center;
+    justify-content: space-between ;
+    display:block;
+}
+.boton-resaltado{
+    align-items: center;
+    text-align: center;
+    margin-left: 20px;
+    border: 1px solid rgb(201, 194, 194);
+    border-radius: 5px; 
+    background-color: colores.$color-boton;
+    padding: 5px;
+}
+.boton-resaltado2{
+    align-items: center;
+    text-align: center;
+    margin-left: 20px;
+    padding: 5px;
+}
+.acciones-container{
+    display:flex;
+    align-items: center;
+    justify-content: center;
 }
 button img{
-    height: 40px;
-}
-div .boton-resaltado{
-    background-color: colores.$color-boton;
-    font-size: 20px;
-    border-bottom: 1px solid black;
-    padding: 12px;
-    border-radius: 50px;
+    width: 35px;
+    height: 35px;
 }

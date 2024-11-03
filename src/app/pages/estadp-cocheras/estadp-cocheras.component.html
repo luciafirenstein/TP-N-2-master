@@ -1,41 +1,42 @@
-<header>
-    <a [routerLink]="['/reporte']" class="reporte">REPORTE</a>
-    <a [routerLink]="['/login']" class ="reporte">INICIAR SESION </a>
-    <h1>PARKING APP</h1>
-    <a href=""><img src="imagenes/logo.png" alt="logo" class="logo"></a>
+    <header>
+        <h1>PARKING APP</h1>
+        <a [routerLink]="['/estado']" class="reporte">ESTADO COCHERAS</a>
+        <a [routerLink]="['/reportes']" class="reporte">REPORTE</a>
+        <a [routerLink]="['/login']" class ="reporte">INICIAR SESION </a>
+        <a href=""><img src="imagenes/icono persona.png" alt="logo" class="logo"></a>
     </header>
     
-    <div id="tabla">
-        <div id="header-tabla">
-           <div>{{header.nro}}</div>
-           <div>{{header.disponibilidad}}</div>
-           <div>{{header.ingreso}}</div>
-           <div>{{header.acciones}}</div>
-        </div>
-    @for (fila of filas; track $index){
-        <button class="fila-tabla" (click)="abrirModalNuevoEstacionamiento(fila.id)"[disabled]="fila.deshabilitada|| fila.activo ">
-            <div>{{fila.id}}</div>
-            @if(fila.activo){
-                <div>{{fila.activo.patente}}</div>
-                
-            } @else if (fila.deshabilitada){
-                <div><span class="ocupado">NO DISPONIBLE</span></div>
-            } @else {
-                <div><span class = "disponible">DISPONIBLE</span></div>
-            }
-            <div>{{fila.activo?.horaIngreso}}</div>
-            <div class="acciones-container">
-                <button (click)="cambiarDisponibilidadCochera($index,$event)"> <img src="imagenes/prohibido 1.png" alt="prohibido"></button>
-                <button (click)="eliminarFila($index,$event)"> <img src="imagenes/tacho2.png" alt="okey"></button>
+        <div id="tabla">
+            <div id="header-tabla">
+               <div>{{header.nro}}</div>
+               <div>{{header.disponibilidad}}</div>
+               <div>{{header.ingreso}}</div>
+               <div>{{header.acciones}}</div>
             </div>
-            
-        </button>
-    }
-    
-    <footer>
-        <div>
-            <button (click) = "agregarFila()" class="boton-resaltado">AGREGAR FILA</button>
-           
-        </div>
-        <a [routerLink]="['/login']" >Cerrar sesión</a>
-    </footer>
+        @for (fila of filas; track $index){
+            <button class="fila-tabla" (click)="abrirModalNuevoEstacionamiento(fila.id)"[disabled]="fila.deshabilitada|| fila.activo ">
+                <div>{{fila.id}}</div>
+                @if(fila.activo){
+                    <div>{{fila.activo.patente}}</div>
+                    
+                } @else if (fila.deshabilitada){
+                    <div><span class="ocupado">NO DISPONIBLE</span></div>
+                } @else {
+                    <div><span class = "disponible">DISPONIBLE</span></div>
+                }
+                <div>{{fila.activo?.horaIngreso}}</div>
+                <div class="acciones-container">
+                    <button (click)="cambiarDisponibilidad($index,$event)"> <img src="imagenes/prohibido.png" alt="prohibido"></button>
+                    <button (click)="eliminarFila($index,$event)"> <img src="imagenes/tacho.png" alt="okey"></button>
+                </div>
+                
+            </button>
+        }
+        
+        <footer>
+            <div>
+                <button (click) = "agregarFila()" class="boton-resaltado">AGREGAR FILA</button>
+               
+            </div>
+            <a [routerLink]="['/login']" >Cerrar sesión</a>
+        </footer>

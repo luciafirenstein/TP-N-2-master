@@ -1,10 +1,14 @@
-// reportes.component.ts
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { CommonModule } from '@angular/common';
+
+
+
 
 @Component({
   selector: 'app-reporte',
   standalone: true,
-  imports: [],
+  imports: [RouterLink, CommonModule],
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.scss'
 })
