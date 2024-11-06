@@ -14,13 +14,18 @@ header{
     padding: 10px;
     margin-bottom: 50px;
 }
+h1{
+    color: colores.$color-texto;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 50px;
+}
 a{
     text-decoration: none;
     color: colores.$color-texto;
     font-weight: 700;
     margin-bottom: 25px;  
 }
-#tabla{
+.tabla{
     display:flex;
     flex-direction: column;
     text-align: center;
@@ -42,8 +47,4 @@ a{
     height: 45px;
    align-items: center;
 }
-h1{
-    color: colores.$color-texto;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 50px;
-}
+
