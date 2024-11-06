@@ -3,7 +3,7 @@
         <a [routerLink]="['/estado']" class="reporte">ESTADO COCHERAS</a>
         <a [routerLink]="['/reportes']" class="reporte">REPORTE</a>
         <a [routerLink]="['/login']" class ="reporte">INICIAR SESION </a>
-        <a href=""><img src="imagenes/icono persona.png" alt="logo" class="logo"></a>
+        <a href=""><img src="imagenes/icono persona.wepb" alt="logo" class="logo"></a>
     </header>
     
         <div id="tabla">
@@ -26,7 +26,7 @@
                 }
                 <div>{{fila.activo?.horaIngreso}}</div>
                 <div class="acciones-container">
-                    <button (click)="cambiarDisponibilidad($index,$event)"> <img src="imagenes/prohibido.png" alt="prohibido"></button>
+                    <button (click)="cambiarDisponibilidadCochera($index,$event)"> <img src="imagenes/prohibido.png" alt="prohibido"></button>
                     <button (click)="eliminarFila($index,$event)"> <img src="imagenes/tacho.png" alt="okey"></button>
                 </div>
                 

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { Cochera } from '../../interfaces/cocheras';
 import { CommonModule } from '@angular/common';
@@ -16,7 +16,7 @@ import { EstacionamientoService } from '../../serive/estacionamiento.service';
   styleUrl: './estadp-cocheras.component.scss'
 })
 
-export class EstadoCocherasComponent {
+export class EstadoCocherasComponent implements OnInit {
    header: { nro:string, disponibilidad: string, ingreso:string, acciones: string} = {
       nro: 'N°',
       disponibilidad: 'DISPONIBILIDAD',
@@ -57,15 +57,17 @@ export class EstadoCocherasComponent {
     event.stopPropagation
    this.filas.splice(index,1);
    }
-   cambiarDisponibilidad(numeroFila:number,event:Event){
-    event.stopPropagation()
-    if(this.filas[numeroFila].deshabilitada === true){
-      this.filas[numeroFila].deshabilitada = false;
-    } else {
-      this.filas[numeroFila].deshabilitada = true;
-    }
-
+   cambiarDisponibilidadCochera(numeroFila: number, event: MouseEvent) {
+    this.filas[numeroFila].deshabilitada = !this.filas[numeroFila].deshabilitada;
+    Swal.fire({
+      title: 'Disponibilidad actualizada',
+      text: this.filas[numeroFila].deshabilitada ? 'Cochera marcada como disponible.' : 'Cochera marcada como no disponible.',
+      icon: 'success',
+      timer: 1500,
+      showConfirmButton: false
+    });
   }
+
    getCocheras(){
     fetch("http://localhost:4000/cocheras "),{
       headers:{
@@ -73,29 +75,28 @@ export class EstadoCocherasComponent {
       },
     }
    }
-   abrirModalNuevoEstacionamiento(idCochera:number){
-    console.log("Abriendo modal cochera",idCochera);
+   abrirModalNuevoEstacionamiento(idCochera: number) {
+    console.log("Abriendo modal cochera", idCochera);
     Swal.fire({
-      title: "Ingrese la patente del vehiculo",
+      title: "Ingrese la patente del vehículo",
       input: "text",
       showCancelButton: true,
       inputValidator: (value) => {
         if (!value) {
-          return "Ingrese una patente valida";
+          return "Ingrese una patente válida";
         }
-        return
+        return;
       }
-    }).then(res=>{
-      if(res.isConfirmed){
-        console.log("Tengo que estacionar la patente",res.value);
-        this.estacionamientos.estacionarAuto(res.value,idCochera);
-        this.estacionamientos.estacionarAuto(res.value,idCochera).then(()=>{
-          //actualizar cocheras
-          this.traerCocheras()
-        })
-    }})
-    
-  }
+    }).then(res => {
+      if (res.isConfirmed) {
+        console.log("Tengo que estacionar la patente", res.value);
+        this.estacionamientos.estacionarAuto(res.value, idCochera).then(() => {
+          // Actualizar cocheras
+        });
+      }
+    });
+  }
 }
+
 
         

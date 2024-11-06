@@ -8,7 +8,7 @@ import { Estacionamiento } from '../interfaces/estacionamiento';
 export class EstacionamientoService {
     auth= inject(AuthService);
     estacionamientos():Promise<Estacionamiento[]> {
-      return fetch ('https://localhost:4200/estacionamiento',{
+      return fetch ('https://localhost:4000/estacionamiento',{
         method: 'GET',
         headers:{
           authorization: "Bearer "+(this.auth.getToken()??''),
