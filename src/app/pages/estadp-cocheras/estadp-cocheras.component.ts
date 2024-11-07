@@ -24,24 +24,22 @@ export class EstadoCocherasComponent implements OnInit {
       acciones: 'ACCIONES',
    };
    filas:(Cochera & {activo: Estacionamiento|null}) []=[];
-   ngOnInit(){
+  cocherasService: any;
+   ngOnInit(): void {
     this.traerCocheras();
-   }
+  }
+
+  traerCocheras(): void {
+    this.cocherasService.cargar().then((data: CocherasService) => {
+      this.cocheras = data;
+    }).catch((error: any) => {
+      console.error('Error al cargar cocheras:', error);
+    });
+  }
    auth = inject(AuthService);
    cocheras = inject(CocherasService);
    estacionamientos = inject(EstacionamientoService)
-   traerCocheras(){
-      return this.cocheras.cocheras().then(cocheras => {
-        this.filas = [];
-        for (let cochera of cocheras) {
-          this.estacionamientos.buscarEstacionamientoActivo(cochera.id).then(estacionamiento => {
-            this.filas.push({
-              ...cochera,
-              activo: estacionamiento,
-            });
-          })
-        }})
-      }
+   
    siguienteNumero: number = 1;
    agregarFila(){
     this.filas.push({
