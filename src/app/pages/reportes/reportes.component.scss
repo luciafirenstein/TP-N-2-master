@@ -1,5 +1,5 @@
-@use"./../../../public/styles/colores.scss";
-@use"./../../../public/styles/tabla.scss";
+@use"./../../../../public/styles/colores.scss";
+@use"./../../../../public/styles/tabla.scss";
 
 header.p{
     color: colores.$color-texto;
@@ -14,6 +14,8 @@ header{
     padding: 10px;
     margin-bottom: 50px;
 }
+
+
 h1{
     color: colores.$color-texto;
     font-family: 'Times New Roman', Times, serif;
@@ -25,7 +27,13 @@ a{
     font-weight: 700;
     margin-bottom: 25px;  
 }
-.tabla{
+div{
+    margin-top: 20px;
+    text-align: center;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+#tabla{
     display:flex;
     flex-direction: column;
     text-align: center;
@@ -34,7 +42,7 @@ a{
         font-weight: 700;
         display: grid;
     }
-    >div{
+    >div, >button{
         display: grid;
         grid-template-columns: 50px 1fr 1fr 1fr;
         border-bottom: 1px solid black;
@@ -47,4 +55,5 @@ a{
     height: 45px;
    align-items: center;
 }
+
 

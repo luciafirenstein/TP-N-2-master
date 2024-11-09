@@ -1,7 +1,9 @@
+import { Estacionamiento } from "./estacionamiento";
+
 export interface Cochera{
-activo: any;
     id: number,
     descripcion: string, 
     deshabilitada: boolean,
-    eliminada: boolean, 
+    eliminada: boolean,
+    activo?: Estacionamiento 
 }
