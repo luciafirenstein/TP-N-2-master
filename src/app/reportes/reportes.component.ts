@@ -1,10 +1,9 @@
 
-import { Component, inject, OnInit } from '@angular/core';
-import { HeaderComponentComponent } from '../../components/header-component/header-component.component';
-import { EstacionamientoService } from '../../serive/estacionamiento.service';
-import { CocherasService } from '../../serive/cocheras.service';
-import { ReporteMensual } from '../../interfaces/reportes';
-import { Estacionamiento } from '../../interfaces/estacionamiento';
+import { Component, inject } from '@angular/core';
+import { HeaderComponentComponent } from '../components/header-component/header-component.component';
+import { EstacionamientoService } from '../serive/estacionamiento.service';
+import { ReporteMensual } from '../interfaces/reportes';
+import { Estacionamiento } from '../interfaces/estacionamiento';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 

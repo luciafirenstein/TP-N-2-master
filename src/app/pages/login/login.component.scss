@@ -10,7 +10,6 @@ main{
     height: 100vh;
     align-items: center;
     justify-content: center;
-    color: rgb(112, 110, 107);
     display: flex;
     flex-direction: column;
 }
@@ -24,7 +23,6 @@ h1{
 }
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
     margin: 0;
     padding: 0;
   }
@@ -37,8 +35,8 @@ body {
   }
   
   .login-form {
-    background-color: #fff;
-    padding: 20px;
+    background-color: colores.$color-login;
+    padding: 50px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     width: 300px;
@@ -46,8 +44,9 @@ body {
   
   .login-form h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: colores.$color-texto;
     text-align: center;
+    font-size: 26px;
   }
   
   .input-group {
@@ -57,45 +56,40 @@ body {
   .input-group label {
     display: block;
     margin-bottom: 5px;
-    color: #333;
+    color: colores.$color-texto;
+    font-size: 20px;
   }
   
   .input-group input {
     width: 100%;
     padding: 4px;
-    border: 1px solid #ccc;
+    border: 1px solid colores.$color-fondo;
     border-radius: 4px;
-    font-size: 16px;
-    color: #333;
+    font-size: 18px;
+    color: colores.$color-texto;
   }
   
   .input-group input:focus {
-    border-color: colores.$color-boton-secundario;
+    border-color: colores.$color-texto;
     outline: none;
+    background-color: colores.$color-fondo;
   }
   
   .login-btn {
     width: 100%;
     padding: 10px;
-    background-color: colores.$color-boton;
-    color: white;
+    background-color: colores.$color-fondo;
+    color: colores.$color-texto;
     border: none;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
+    font-size: 18px;
   }
   
   .login-btn:hover {
-    background-color: colores.$color-boton-secundario;
+    background-color: colores.$color-boton;
   }
-  
-a{
+  a{
     text-decoration: none;
     color: colores.$color-texto;
-}
-p{
-    color: colores.$color-texto;
-    text-align: center;
-    font-size: 16px;
-    padding: 5px;
 }

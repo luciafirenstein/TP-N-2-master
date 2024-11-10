@@ -5,5 +5,6 @@ export interface Cochera{
     descripcion: string, 
     deshabilitada: boolean,
     eliminada: boolean,
-    activo?: Estacionamiento 
+    activo?: Estacionamiento,
+
 }

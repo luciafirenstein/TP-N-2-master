@@ -1,5 +1,5 @@
-@use"./../../../../public/styles/colores.scss";
-@use"./../../../../public/styles/tabla.scss";
+@use"./../../../public/styles/colores.scss";
+@use"./../../../public/styles/tabla.scss";
 
 header.p{
     color: colores.$color-texto;
@@ -10,7 +10,7 @@ header{
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: colores.$color-principal;
+    background-color: colores.$color-titulos;
     padding: 10px;
     margin-bottom: 50px;
 }
@@ -24,8 +24,8 @@ h1{
 a{
     text-decoration: none;
     color: colores.$color-texto;
-    font-weight: 700;
-    margin-bottom: 25px;  
+    margin-bottom: 25px;
+    font-weight: bold;  
 }
 div{
     margin-top: 20px;

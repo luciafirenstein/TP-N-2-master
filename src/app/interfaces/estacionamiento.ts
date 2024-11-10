@@ -1,6 +1,6 @@
 export interface Estacionamiento{
-    id: number,
     patente: string;
+    id: number,
     horaIngreso: string;
     horaEgreso: string|null;
     costo:number|null;
@@ -8,4 +8,5 @@ export interface Estacionamiento{
     idUsuarioEgreso:string|null;
     idCochera: number;
     eliminado:null;
+    
 }

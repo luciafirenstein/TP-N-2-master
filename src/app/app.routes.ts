@@ -3,7 +3,7 @@ import { LoginComponent } from './pages/login/login.component';
 import { EstadoCocherasComponent } from './pages/estadp-cocheras/estadp-cocheras.component'; 
 import { inject } from '@angular/core';
 import { AuthService } from './serive/auth.service';
-import { ReportesComponent } from './pages/reportes/reportes.component';
+import { ReportesComponent } from './reportes/reportes.component';
 
 function guardaLogueado(){
     let auth= inject(AuthService);

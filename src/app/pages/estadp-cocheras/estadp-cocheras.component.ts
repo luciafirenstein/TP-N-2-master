@@ -6,7 +6,6 @@ import { AuthService } from '../../serive/auth.service';
 import Swal from 'sweetalert2';
 import { EstacionamientoService } from '../../serive/estacionamiento.service';
 import { CocherasService } from '../../serive/cocheras.service';
-import { Estacionamiento } from '../../interfaces/estacionamiento';
 import { ReporteMensual } from '../../interfaces/reportes';
 
 @Component({
@@ -16,6 +15,7 @@ import { ReporteMensual } from '../../interfaces/reportes';
   templateUrl: './estadp-cocheras.component.html',
   styleUrl: './estadp-cocheras.component.scss'
 })
+
 
 export class EstadoCocherasComponent implements OnInit{
 
@@ -32,6 +32,7 @@ header:{nro: string, disponibilidad: string, ingreso:string, acciones: string } 
 };
 filas: Cochera[]=[];
 
+
   
 
 ngOnInit(): void {
@@ -43,6 +44,9 @@ estacionamientos=inject(EstacionamientoService);
 cocheras=inject(CocherasService);
 
 siguienteNumero: number = 1;
+datosEstado={
+  descripcion: "ABC123"
+}
 
   async traerCocheras() {
   const cocheras = await this.cocheras['cocheras']();
@@ -57,13 +61,13 @@ siguienteNumero: number = 1;
   }
 }
 agregarFila() {
-  fetch('http://localhost:4000/cocheras/', {
+  return fetch('http://localhost:4000/cocheras/', {
     method: 'POST',
     headers: {
-      'Authorization': 'Bearer ' + this.auth.getToken(),
+      'Authorization': 'Bearer ${this.auth.getToken()}',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify({ descripcion: "Agregada por API" })
+    body: JSON.stringify(this.datosEstado),
   }).then(() => {
     this.traerCocheras();
   });
@@ -74,20 +78,46 @@ agregarFila() {
       headers: {
         'Authorization': 'Bearer ' + this.auth.getToken(),
       },
-    });
-    this.traerCocheras();
-  }
-
-  cambiarDisponibilidadCochera(cocheraId: number, event: Event) {
-    fetch(`http://localhost:4000/cocheras/${cocheraId}/disable`, {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + this.auth.getToken(),
-      },
     }).then(() => {
       this.traerCocheras();
     });
   }
+  showModal(indice: number, event:Event) {
+    event.stopPropagation();
+    Swal.fire({
+      title: "Seguro que quieres borrar la cochera?",
+      text: "Una vez hecho no hay vuelta atrás!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Si, borrar!"
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Listo!",
+          text: "La cochera fue eliminada con éxito.",
+          icon: "success"
+        });
+        this.eliminarFila(indice);
+      }
+    });
+  }
+
+  cambiarDisponibilidadCochera(cocheraId:number, event: Event){
+    fetch ('http://localhost:4000/cocheras/'+cocheraId+'/disable', {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + this.auth.getToken(),
+      },
+    }).then(()=>{
+      this.traerCocheras();
+    });
+  }
+
+  
+
+
 
   abrirModalNuevoEstacionamiento(idCochera: number) {
     Swal.fire({
@@ -102,49 +132,16 @@ agregarFila() {
       }
     }).then(res => {
       if (res.isConfirmed) {
-        fetch(`http://localhost:4000/estacionamientos/abrir`, {
-          method: 'POST',
-          headers: {
-            'Authorization': 'Bearer ' + this.auth.getToken(),
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({ patente: res.value, cocheraId: idCochera })
-        }).then(() => this.traerCocheras());
-      }
+        this.estacionamientos.estacionarAuto(res.value, idCochera).then(() => {
+          //actualizar cocheras
+          this.traerCocheras();
     });
   }
+})
+}
   
-    abrirModalEliminarEstacionamiento(idCochera:number){
-      const cochera = this.filas.find(cochera => cochera.id === idCochera)!;
-      if(!cochera.activo){
-        Swal.fire({
-          title: "Esta seguro de borrar la cochera?",
-          icon: "question",
-          showCancelButton: true,
-          confirmButtonColor: '#3085d6',
-          cancelButtonColor: '#d33',
-          confirmButtonText: "Eliminar Cochera"
-  
-        }).then((result)=> {
-          if(result.isConfirmed){
-            this.eliminarFila(cochera.id).then(()=> this.sortCocheras());
-          }
-        });
-       
-      }else{
-        Swal.fire({
-          icon:"error",
-          title:"Cochera ocupada",
-          text: 'Para eliminar la cochera, primero debe cerrarse',
-        })
-      }
-
-      
-    }
-    async cobrarEstacionamiento(cocheraId: number) {
-      const cochera = this.filas.find(f => f.id === cocheraId);
-      
-      if (!cochera?.activo) {
+    abrirModalEliminarEstacionamiento(idCochera: number, patente?: string) {
+      if (!patente) {
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -152,60 +149,39 @@ agregarFila() {
         });
         return;
       }
-    
-      const horaIngreso = new Date(cochera.activo.horaIngreso);
-      const horaActual = new Date();
-      const tiempoEstacionado = horaActual.getTime() - horaIngreso.getTime();
-      const horasEstacionado = Math.ceil(tiempoEstacionado / (1000 * 60 * 60));
-      const costoPorHora = 500; 
-      const total = horasEstacionado * costoPorHora;
-    
-      const result = await Swal.fire({
-        title: 'Cobrar Estacionamiento',
-        html: `
-          <div>
-            <p>Patente: ${cochera.activo.patente}</p>
-            <p>Hora de ingreso: ${horaIngreso.toLocaleString()}</p>
-            <p>Tiempo estacionado: ${horasEstacionado} hora(s)</p>
-            <p>Total a cobrar: $${total}</p>
-          </div>
-        `,
-        icon: 'info',
+      Swal.fire({
+        title: '¿Deseas cerrar el estacionamiento?',
+        icon: 'warning',
         showCancelButton: true,
-        confirmButtonText: 'Cobrar',
-        cancelButtonText: 'Cancelar'
-      });
-    
-      if (result.isConfirmed) {
-        try {
-          await fetch(`http://localhost:4000/estacionamientos/${cochera.activo.id}/finalizar`, {
-            method: 'POST',
-            headers: {
-              'Authorization': 'Bearer ' + this.auth.getToken(),
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              horaEgreso: horaActual.toISOString(),
-              importe: total
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Cerrar'
+      }).then((res) => {
+        if (res.isConfirmed) {
+          this.estacionamientos.cerrarEstacionamiento(patente, idCochera)
+            .then((r) => {
+              if (!r.ok) throw new Error("Error en la respuesta del servidor"); // Maneja respuestas no OK
+              return r.json(); // Convertimos a JSON
             })
-          });
-    
-          await Swal.fire({
-            title: 'Éxito',
-            text: 'Pago procesado correctamente',
-            icon: 'success'
-          });
-    
-          await this.traerCocheras();
-        } catch (error) {
-          Swal.fire({
-            title: 'Error',
-            text: 'No se pudo procesar el pago',
-            icon: 'error'
-          });
-        }
+            .then((rJson) => {
+              const costo = rJson.costo;
+              this.traerCocheras();
+              Swal.fire({
+                title: 'La cochera ha sido cerrada',
+                text: `El precio a cobrar es ${costo}`,
+                icon: 'info'
+              });
+            });
+          } else if (res.dismiss) {
+            Swal.fire({
+              title: 'Cancelado',
+              text: 'La cochera no ha sido cerrada.',
+              icon: 'info'
+            });
+          }
+        });
       }
-    }
+      
     
     
 sortCocheras(){
