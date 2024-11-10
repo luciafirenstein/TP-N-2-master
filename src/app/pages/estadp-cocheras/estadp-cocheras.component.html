@@ -16,10 +16,11 @@
     @for (fila of filas; track $index){
         <button class="fila-tabla" (click)="abrirModalNuevoEstacionamiento(fila.id)"[disabled]="fila.deshabilitada|| fila.activo ">
             <div>{{fila.id}}</div>
+            
             @if(fila.activo){
-                <div>{{fila.activo.patente}}</div>
-                
-            } @else if (fila.deshabilitada){
+                <div (click)="abrirModalPago(fila.id, fila.activo.patente)">{{fila.activo.patente}}</div> <!-- Aquí agregas el (click) -->
+            
+            }@else if (fila.deshabilitada){
                 <div><span class="ocupado">NO DISPONIBLE</span></div>
             } @else {
                 <div><span class = "disponible">DISPONIBLE</span></div>
@@ -27,12 +28,12 @@
             <div>{{fila.activo?.horaIngreso}}</div>
             <div class="acciones-container">
                 <button (click)="cambiarDisponibilidadCochera($index,$event)"> <img src="imagenes/prohibido.png" alt="prohibido"></button>
-                <button (click)="abrirModalEliminarEstacionamiento(fila.id, fila.activo?.patente)"> <img src="imagenes/tacho.png" alt="okey"></button>
-                
+                <button (click)="eliminarFila($index,$event)"> <img src="imagenes/tacho.png" alt="okey"></button> 
             </div>
-            
         </button>
-    }
+    
+    
+        }
     
     <footer>
         <div>

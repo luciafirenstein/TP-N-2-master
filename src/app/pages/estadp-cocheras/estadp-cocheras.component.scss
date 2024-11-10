@@ -42,7 +42,7 @@ header {
   margin: 2rem;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 10px colores.$color-texto;
 
   #header-tabla {
     display: grid;
@@ -64,22 +64,11 @@ header {
     padding: 1rem;
     font-size: 16px;
     border: none;
-    background-color: white;
     border-bottom: 1px solid colores.$color-texto;
     width: 100%;
     text-align: left;
     cursor: pointer;
-    transition: background-color 0.2s;
-
-    &:hover {
-      background-color: #f8f9fa;
-    }
-
-    &[disabled] {
-      background-color: #f5f5f5;
-      cursor: not-allowed;
-    }
-
+   
     div {
       display: flex;
       align-items: center;
@@ -119,23 +108,25 @@ footer {
   bottom: 0;
   width: 100%;
   padding: 1rem;
-  background-color: white;
   border-top: 1px solid colores.$color-texto;
+  background-color: colores.$color-titulos;
   display: flex;
-  justify-content: space-between;
+  justify-content:space-around;
   align-items: center;
 
   .boton-resaltado {
-    background-color: colores.$color-boton;
-    color: white;
+    background-color: colores.$color-boton-secundario;
+    color:colores.$color-texto;
     border: none;
     padding: 0.75rem 1.5rem;
+    font-size: 16px;
+    font-weight: bold;
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s;
 
     &:hover {
-      background-color: darken(colores.$color-boton-secundario, 10%);
+      background-color: darken(colores.$color-boton, 10%);
     }
   }
 
@@ -143,6 +134,8 @@ footer {
     color: colores.$color-texto;
     text-decoration: none;
     font-weight: bold;
+    text-align: center;
+    font-size: 20px;
 
     &:hover {
       text-decoration: underline;

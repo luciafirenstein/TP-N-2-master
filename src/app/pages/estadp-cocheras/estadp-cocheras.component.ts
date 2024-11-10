@@ -48,61 +48,34 @@ datosEstado={
   descripcion: "ABC123"
 }
 
-  async traerCocheras() {
+async traerCocheras() {
   const cocheras = await this.cocheras['cocheras']();
-  this.filas = [];
-  for (let cochera of cocheras) {
-    this.estacionamientos.buscarEstacionamientoActivo(cochera.id).then(estacionamiento => {
-      this.filas.push({
+  
+  // Utilizar Promise.all para esperar a que todas las promesas se resuelvan
+  const filasConEstacionamientos = await Promise.all(
+    cocheras.map(async (cochera: { id: number; }) => {
+      const estacionamiento = await this.estacionamientos.buscarEstacionamientoActivo(cochera.id);
+      return {
         ...cochera,
         activo: estacionamiento,
-      });
-    });
-  }
+      };
+    })
+  );
+  
+  // Actualizar filas con los datos completos
+  this.filas = filasConEstacionamientos;
 }
-agregarFila() {
-  return fetch('http://localhost:4000/cocheras/', {
-    method: 'POST',
-    headers: {
-      'Authorization': 'Bearer ${this.auth.getToken()}',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(this.datosEstado),
-  }).then(() => {
-    this.traerCocheras();
+agregarFila(){
+  this.filas.push({
+    id: this.siguienteNumero,
+    descripcion: '',
+    deshabilitada: false,
+    eliminada: false,
+    activo: null
   });
-}
-  async eliminarFila(cocheraId: number) {
-    await fetch(`http://localhost:4000/cocheras/${cocheraId}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': 'Bearer ' + this.auth.getToken(),
-      },
-    }).then(() => {
-      this.traerCocheras();
-    });
-  }
-  showModal(indice: number, event:Event) {
-    event.stopPropagation();
-    Swal.fire({
-      title: "Seguro que quieres borrar la cochera?",
-      text: "Una vez hecho no hay vuelta atrás!",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Si, borrar!"
-    }).then((result) => {
-      if (result.isConfirmed) {
-        Swal.fire({
-          title: "Listo!",
-          text: "La cochera fue eliminada con éxito.",
-          icon: "success"
-        });
-        this.eliminarFila(indice);
-      }
-    });
-  }
+  this.siguienteNumero +=1;
+ };
+
 
   cambiarDisponibilidadCochera(cocheraId:number, event: Event){
     fetch ('http://localhost:4000/cocheras/'+cocheraId+'/disable', {
@@ -114,9 +87,6 @@ agregarFila() {
       this.traerCocheras();
     });
   }
-
-  
-
 
 
   abrirModalNuevoEstacionamiento(idCochera: number) {
@@ -139,51 +109,56 @@ agregarFila() {
   }
 })
 }
-  
-    abrirModalEliminarEstacionamiento(idCochera: number, patente?: string) {
-      if (!patente) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'No hay un estacionamiento activo en esta cochera'
+eliminarFila(index: number, event: Event) {
+  event.stopPropagation(); // Evita que el evento se propague al resto de la aplicación
+
+  Swal.fire({
+    title: '¿Estás seguro?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // Eliminar la fila del array de filas
+      this.filas.splice(index, 1);
+    }
+  });
+}
+   
+
+
+abrirModalPago(idCochera: number, patente: string) {
+  console.log('idCochera:', idCochera);
+  console.log('patente:', patente);
+
+  if (!patente) return;  // Asegúrate de que la patente esté presente
+
+  // Aquí puedes hacer una llamada al servicio para obtener el monto a pagar de esta patente
+  this.estacionamientos.obtenerMontoAPagar(patente).then(monto => {
+    // Muestra el modal con el monto a pagar
+    Swal.fire({
+      title: 'Monto a Pagar',
+      text: `El monto a pagar es: $${monto}`,
+      icon: 'info',
+      showCancelButton: true,
+      confirmButtonText: 'Liberar Cochera',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Si el usuario confirma, libera la cochera
+        this.estacionamientos.liberarCochera(idCochera, patente).then(() => {
+          Swal.fire('Cochera Liberada', 'La cochera ha sido liberada', 'success');
+          this.traerCocheras();  // Refresca las cocheras
         });
-        return;
       }
-      Swal.fire({
-        title: '¿Deseas cerrar el estacionamiento?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Cerrar'
-      }).then((res) => {
-        if (res.isConfirmed) {
-          this.estacionamientos.cerrarEstacionamiento(patente, idCochera)
-            .then((r) => {
-              if (!r.ok) throw new Error("Error en la respuesta del servidor"); // Maneja respuestas no OK
-              return r.json(); // Convertimos a JSON
-            })
-            .then((rJson) => {
-              const costo = rJson.costo;
-              this.traerCocheras();
-              Swal.fire({
-                title: 'La cochera ha sido cerrada',
-                text: `El precio a cobrar es ${costo}`,
-                icon: 'info'
-              });
-            });
-          } else if (res.dismiss) {
-            Swal.fire({
-              title: 'Cancelado',
-              text: 'La cochera no ha sido cerrada.',
-              icon: 'info'
-            });
-          }
-        });
-      }
-      
-    
-    
+    });
+  }).catch(error => {
+    Swal.fire('Error', 'No se pudo obtener el monto', 'error');
+  });
+}
+
 sortCocheras(){
   this.filas.sort((a,b)=> a.id > b.id ? 1 : -1)
 }
