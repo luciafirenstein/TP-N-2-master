@@ -1,10 +1,9 @@
 
 import { Component, inject, OnInit } from '@angular/core';
-import { HeaderComponentComponent } from '../components/header-component/header-component.component';
 import { EstacionamientoService } from '../serive/estacionamiento.service';
 import { ReporteMensual } from '../interfaces/reportes';
 import { Estacionamiento } from '../interfaces/estacionamiento';
-import { RouterLink, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../serive/auth.service';
 
@@ -12,7 +11,7 @@ import { AuthService } from '../serive/auth.service';
 @Component({
   selector: 'app-reporte',
   standalone: true,
-  imports: [RouterLink, CommonModule, HeaderComponentComponent, RouterModule],
+  imports:[CommonModule, RouterModule],
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.scss'
 })
