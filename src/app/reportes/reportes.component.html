@@ -9,19 +9,18 @@
 
 <div id="tabla">
     <div class="header-tabla">
-        <div>Nro</div>
         <div>Mes</div>
         <div>Usos</div>
         <div>Cobrado</div>
-    </div>
-  <div>
-    @for (reporte of reporte; track $index) {
+      </div>
+    <div>
+  
+    @for (reporte of reporteEstacionamientos; track $index) {
         <div class="fila-tabla">
-          <div>{{ $index + 1 }}</div>
           <div>{{ reporte.mes }}</div>
           <div>{{ reporte.usos }}</div>
           <div>{{ reporte.cobrado | currency }}</div>
         </div>
       }
-      
+    </div>    
   </div>

@@ -20,47 +20,22 @@ export class ReportesComponent implements OnInit {
 
   estacionamientos = inject(EstacionamientoService);
   auth=inject(AuthService)
-  historialEstacionamientos: Estacionamiento[] = [];
   reporteEstacionamientos: ReporteMensual[] = [];
-reporte: any;
 
   ngOnInit() {
     this.estacionamientoTraerlo();
   }
   
   estacionamientoTraerlo() {
-    fetch('http://localhost:4000/estacionamientos', {
-      method: 'GET',
-      headers: {
-        authorization: 'Bearer ' + this.auth.getToken()
-      }
-    })
-      .then((response) => response.json())
-      .then((data: Estacionamiento[]) => { 
-        const historialEstacionamientos = data.filter(estacionada => estacionada.horaEgreso != null);
-
-        let mesesTrabajo: string[] = [];
-        let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
-
+    
     this.estacionamientos.estacionamientos().then(estacionadas => {
-      for (let estacionada of estacionadas) {
-        if (estacionada.horaEgreso != null) {
-          this.historialEstacionamientos.push(estacionada);
-        }
-      }
-
-      this.historialEstacionamientos.sort((a, b) => {
-        if (a.horaIngreso > b.horaIngreso) {
-          return 1;
-        }
-        if (a.horaIngreso < b.horaIngreso) {
-          return -1;
-        }
-        return 0;
-      });
+      const historialEstacionamientos = estacionadas.filter(estacionada => estacionada.horaEgreso != null);
+  
+      let mesesTrabajo: string[] = [];
+      let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
 
       
-      for (let estacionada of this.historialEstacionamientos) {
+      for (let estacionada of historialEstacionamientos) {
         const estacionadaConDate = { ...estacionada, horaIngreso: new Date(estacionada.horaIngreso) };
         const periodo = meses[estacionadaConDate.horaIngreso.getMonth()] + " " + estacionadaConDate.horaIngreso.getFullYear();
         if (!mesesTrabajo.includes(periodo)) {
@@ -80,8 +55,10 @@ reporte: any;
 
     })
   }
-)}
+  
 }
+
+
 
 
 

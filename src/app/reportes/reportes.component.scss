@@ -1,59 +1,66 @@
 @use"./../../../public/styles/colores.scss";
 @use"./../../../public/styles/tabla.scss";
 
-header.p{
+  
+  header {
+    background-color: colores.$color-titulos;
+    padding: 10px;
     color: colores.$color-texto;
-    justify-content: space-between;
-    margin-top: 25px;
-}
-header{
+    font-family: sans-serif;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: colores.$color-titulos;
-    padding: 10px;
-    margin-bottom: 50px;
-}
-
-
-h1{
-    color: colores.$color-texto;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 50px;
-}
-a{
-    text-decoration: none;
-    color: colores.$color-texto;
-    margin-bottom: 25px;
-    font-weight: bold;  
-}
-div{
-    margin-top: 20px;
-    text-align: center;
-    margin-left: 20px;
-    margin-right: 20px;
-}
-#tabla{
-    display:flex;
-    flex-direction: column;
-    text-align: center;
-    #header-tabla{
-        font-size: larger;
-        font-weight: 700;
-        display: grid;
+  
+    h1 {
+        color: colores.$color-texto;
+        font-family: 'Times New Roman', Times, serif;
+        font-size: 50px;
+        margin-right: 2rem;
+      }
+  
+    .reporte {
+      color: colores.$color-texto;
+      font-family: sans-serif;
+      font-weight: bold;
+      text-decoration: none;
+      padding: 0.5rem 1rem;
+      margin-left: 1rem;
+  
+      &:hover {
+        color: #ccc;
+      }
     }
-    >div, >button{
-        display: grid;
-        grid-template-columns: 50px 1fr 1fr 1fr;
-        border-bottom: 1px solid black;
-        text-align: center;
+  
+    .logo {
+        width: 60px;
+        height: 60px;
+        align-items: center;
     }
-    
-}
-.logo{
-    width: 45px;
-    height: 45px;
-   align-items: center;
-}
-
-
+  }
+  
+  #tabla {
+    margin: 2rem;
+    font-size: 18px;
+  
+    .header-tabla {
+      background-color: colores.$color-fondo;;
+      color: colores.$color-texto;
+      font-family: 'Times New Roman', Times, serif;
+      font-size: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 10px;
+      font-weight: bold;
+    }
+  
+    .fila-tabla {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 1rem;
+      border-bottom: 1px solid #ccc;
+  
+      &:nth-child(even) {
+        background-color: #f5f5f5;
+      }
+    }
+  }
