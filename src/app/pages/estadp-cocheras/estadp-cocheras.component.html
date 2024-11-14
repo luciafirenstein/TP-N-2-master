@@ -18,7 +18,7 @@
             <div>{{fila.id}}</div>
             
             @if(fila.activo){
-                <div (click)="abrirModalPago(fila.id, fila.activo.patente)">{{fila.activo.patente}}</div> <!-- Aquí agregas el (click) -->
+                <div (click)="cerrarModalEstacionamiento(fila.id, fila.activo.patente)">{{fila.activo.patente}}</div> 
             
             }@else if (fila.deshabilitada){
                 <div><span class="ocupado">NO DISPONIBLE</span></div>
@@ -27,8 +27,8 @@
             }
             <div>{{fila.activo?.horaIngreso}}</div>
             <div class="acciones-container">
-                <button (click)="cambiarDisponibilidadCochera($index,$event)"> <img src="imagenes/prohibido.png" alt="prohibido"></button>
-                <button (click)="eliminarFila($index,$event)"> <img src="imagenes/tacho.png" alt="okey"></button> 
+                <button (click)="cambiarDisponibilidadCochera($index,$event)"><img src="imagenes/prohibido.png" alt="prohibido"></button>
+                <button (click)="eliminarFilaModal(fila.id, $event)"> <img src="imagenes/tacho.png" alt="okey"></button> 
             </div>
         </button>
   

@@ -21,8 +21,6 @@ export class EstadoCocherasComponent implements OnInit{
 
 reportes: ReporteMensual[]=[];
 
-
-
 titulo: string = 'Estado de la cochera';
 header:{nro: string, disponibilidad: string, ingreso:string, acciones: string } = {
   nro: 'Nro',
@@ -31,9 +29,6 @@ header:{nro: string, disponibilidad: string, ingreso:string, acciones: string } 
   acciones: 'Acciones',
 };
 filas: Cochera[]=[];
-
-
-  
 
 ngOnInit(): void {
   this.traerCocheras();
@@ -76,8 +71,18 @@ agregarFila(){
   this.siguienteNumero +=1;
  };
 
-
-  cambiarDisponibilidadCochera(cocheraId:number, event: Event){
+  /** Elimina la fila de la cochera seleccionada */
+ borrarFila(cocheraId: number) {
+  fetch('http://localhost:4000/cocheras/' + cocheraId, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ` + this.auth.getToken(),
+    },
+  }).then(() => {
+    this.traerCocheras();
+  });
+}
+  cambiarDisponibilidadCochera(cocheraId:number, event:Event){
     fetch ('http://localhost:4000/cocheras/'+cocheraId+'/disable', {
       method: 'POST',
       headers: {
@@ -85,6 +90,28 @@ agregarFila(){
       },
     }).then(()=>{
       this.traerCocheras();
+    });
+  }
+  ;
+  eliminarFilaModal(indice: number, event: Event) {
+    event.stopPropagation(); // Evita que el evento se propague al resto de la aplicación
+  
+    Swal.fire({
+      title: '¿Estás seguro que quieres borrar la cochera?',
+      text: 'Esta acción no se puede deshacer.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, eliminar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: "Listo!",
+          text: "La cochera fue eliminada con éxito.",
+          icon: "success"
+        });
+        this.borrarFila(indice);
+      }
     });
   }
 
@@ -109,53 +136,38 @@ agregarFila(){
   }
 })
 }
-eliminarFila(index: number, event: Event) {
-  event.stopPropagation(); // Evita que el evento se propague al resto de la aplicación
 
+cerrarModalEstacionamiento(idCochera: number, patente: string) {
   Swal.fire({
-    title: '¿Estás seguro?',
-    text: 'Esta acción no se puede deshacer.',
+    title: '¿Deseas cerrar el estacionamiento?',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // Eliminar la fila del array de filas
-      this.filas.splice(index, 1);
-    }
-  });
-}
-   
-
-
-abrirModalPago(idCochera: number, patente: string) {
-  console.log('idCochera:', idCochera);
-  console.log('patente:', patente);
-
-  if (!patente) return;  // Asegúrate de que la patente esté presente
-
-  // Aquí puedes hacer una llamada al servicio para obtener el monto a pagar de esta patente
-  this.estacionamientos.obtenerMontoAPagar(patente).then(monto => {
-    // Muestra el modal con el monto a pagar
-    Swal.fire({
-      title: 'Monto a Pagar',
-      text: `El monto a pagar es: $${monto}`,
-      icon: 'info',
-      showCancelButton: true,
-      confirmButtonText: 'Liberar Cochera',
-      cancelButtonText: 'Cancelar'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        // Si el usuario confirma, libera la cochera
-        this.estacionamientos.liberarCochera(idCochera, patente).then(() => {
-          Swal.fire('Cochera Liberada', 'La cochera ha sido liberada', 'success');
-          this.traerCocheras();  // Refresca las cocheras
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Cerrar'
+  }).then((res) => {
+    if (res.isConfirmed) {
+      this.estacionamientos.cerrarEstacionamiento(patente, idCochera)
+        .then((r) => {
+          if (!r.ok) throw new Error("Error en la respuesta del servidor"); 
+          return r.json(); 
+        })
+        .then((rJson) => {
+          const costo = rJson.costo;
+          this.traerCocheras();
+          Swal.fire({
+            title: 'La cochera ha sido cerrada',
+            text: `El precio a cobrar es ${costo}`,
+            icon: 'info'
+          });
         });
-      }
-    });
-  }).catch(error => {
-    Swal.fire('Error', 'No se pudo obtener el monto', 'error');
+    } else if (res.dismiss) {
+      Swal.fire({
+        title: 'Cancelado',
+        text: 'La cochera no ha sido cerrada.',
+        icon: 'info'
+      });
+    }
   });
 }
 
