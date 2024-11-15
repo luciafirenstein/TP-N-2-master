@@ -30,6 +30,7 @@ header:{nro: string, disponibilidad: string, ingreso:string, acciones: string } 
 };
 filas: Cochera[]=[];
 
+
 ngOnInit(): void {
   this.traerCocheras();
 }
@@ -39,9 +40,7 @@ estacionamientos=inject(EstacionamientoService);
 cocheras=inject(CocherasService);
 
 siguienteNumero: number = 1;
-datosEstado={
-  descripcion: "ABC123"
-}
+
 
 async traerCocheras() {
   const cocheras = await this.cocheras['cocheras']();
@@ -72,30 +71,8 @@ agregarFila(){
  };
 
   /** Elimina la fila de la cochera seleccionada */
- borrarFila(cocheraId: number) {
-  fetch('http://localhost:4000/cocheras/' + cocheraId, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ` + this.auth.getToken(),
-    },
-  }).then(() => {
-    this.traerCocheras();
-  });
-}
-  cambiarDisponibilidadCochera(cocheraId:number, event:Event){
-    fetch ('http://localhost:4000/cocheras/'+cocheraId+'/disable', {
-      method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + this.auth.getToken(),
-      },
-    }).then(()=>{
-      this.traerCocheras();
-    });
-  }
-  ;
-  eliminarFilaModal(indice: number, event: Event) {
-    event.stopPropagation(); // Evita que el evento se propague al resto de la aplicación
-  
+  eliminarFilaModal(cocheraId: number, event: Event) {
+    event.stopPropagation();
     Swal.fire({
       title: '¿Estás seguro que quieres borrar la cochera?',
       text: 'Esta acción no se puede deshacer.',
@@ -110,32 +87,44 @@ agregarFila(){
           text: "La cochera fue eliminada con éxito.",
           icon: "success"
         });
-        this.borrarFila(indice);
+        this.cocheras.eliminarCochera(cocheraId).then(() => {
+          this.traerCocheras();
+        });
       }
     });
+  }
+
+  cambiarDisponibilidadCochera(cocheraId: number, event: Event) {
+    const cochera = this.filas.find(c => c.id === cocheraId);
+    if (cochera?.activo) {
+      this.abrirModalNuevoEstacionamiento(cocheraId);
+    } else {
+      this.cocheras.cambiarDisponibilidadCochera(cocheraId).then(() => {
+        this.traerCocheras();
+      });
+    }
   }
 
 
   abrirModalNuevoEstacionamiento(idCochera: number) {
     Swal.fire({
-      title: "Ingrese la patente del vehiculo",
+      title: "Ingrese la patente del vehículo",
       input: "text",
       showCancelButton: true,
       inputValidator: (value) => {
         if (!value) {
-          return "Ingrese una patente valida";
+          return "Ingrese una patente válida";
         }
         return;
       }
     }).then(res => {
       if (res.isConfirmed) {
         this.estacionamientos.estacionarAuto(res.value, idCochera).then(() => {
-          //actualizar cocheras
           this.traerCocheras();
+        });
+      }
     });
   }
-})
-}
 
 cerrarModalEstacionamiento(idCochera: number, patente: string) {
   Swal.fire({
@@ -149,8 +138,8 @@ cerrarModalEstacionamiento(idCochera: number, patente: string) {
     if (res.isConfirmed) {
       this.estacionamientos.cerrarEstacionamiento(patente, idCochera)
         .then((r) => {
-          if (!r.ok) throw new Error("Error en la respuesta del servidor"); 
-          return r.json(); 
+          if (!r.ok) throw new Error("Error en la respuesta del servidor");
+          return r.json();
         })
         .then((rJson) => {
           const costo = rJson.costo;
@@ -161,12 +150,6 @@ cerrarModalEstacionamiento(idCochera: number, patente: string) {
             icon: 'info'
           });
         });
-    } else if (res.dismiss) {
-      Swal.fire({
-        title: 'Cancelado',
-        text: 'La cochera no ha sido cerrada.',
-        icon: 'info'
-      });
     }
   });
 }

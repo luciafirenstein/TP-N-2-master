@@ -8,6 +8,8 @@ import { Cochera } from '../interfaces/cocheras';
 export class CocherasService {
 
   auth= inject(AuthService);
+  eliminarCochera: any;
+  cambiarDisponibilidadCochera: any;
 
   async cocheras(){
     const r = await fetch('http://localhost:4000/cocheras', {
