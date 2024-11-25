@@ -4,7 +4,7 @@ export interface Estacionamiento{
     id: number,
     horaIngreso: string;
     horaEgreso: string|null;
-    costo:number|null;
+    costo:number;
     idUsuarioIngreso:string;
     idUsuarioEgreso:string|null;
     idCochera: number;

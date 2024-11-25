@@ -41,9 +41,8 @@ export class ReportesComponent implements OnInit {
   
     //<Estacionamiento[]>//
     async traerEstacionamientos(){
-       const estacionamientos = await this.estacionamientos.estacionamientos();
+      const estacionamientos = await this.estacionamientos.estacionamientos();
       let reportes: ReporteMensual[] = [];
-
       for (let estacionamiento of estacionamientos) {
         if (estacionamiento.horaEgreso !== null) {
           let fecha = new Date(estacionamiento.horaEgreso);
@@ -52,21 +51,22 @@ export class ReportesComponent implements OnInit {
             year: "numeric",
           });
           const indiceMes = reportes.findIndex((res) => res.mes === mes);
-          const costo = estacionamiento.costo ?? 0; // Manejo de valor nulo
           if (indiceMes === -1) {
             reportes.push({
               mes: mes,
               usos: 1,
-              cobrados: costo,
+              cobrados: estacionamiento.costo,
             });
           } else {
             reportes[indiceMes].usos = +1;
-            reportes[indiceMes].cobrados += costo;
+            reportes[indiceMes].cobrados += estacionamiento.costo;
           }
         }
       }
       return reportes;
-      };
-    }
-  
-  
+     };
+   }
+ 
+ function callback(reportes: ReporteMensual[]) {
+   throw new Error('Function not implemented.');
+ }
