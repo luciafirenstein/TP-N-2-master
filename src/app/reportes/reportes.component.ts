@@ -39,7 +39,6 @@ export class ReportesComponent implements OnInit {
       })
     };
   
-    //<Estacionamiento[]>//
     async traerEstacionamientos(){
       const estacionamientos = await this.estacionamientos.estacionamientos();
       let reportes: ReporteMensual[] = [];
