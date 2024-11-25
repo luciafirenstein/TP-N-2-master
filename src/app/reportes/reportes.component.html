@@ -15,11 +15,11 @@
       </div>
     <div>
   
-    @for (reporte of reporteEstacionamientos; track $index) {
+    @for (reporte of reportes; track $index) {
         <div class="fila-tabla">
           <div>{{ reporte.mes }}</div>
           <div>{{ reporte.usos }}</div>
-          <div>{{ reporte.cobrado | currency }}</div>
+          <div>{{ reporte.cobrados | currency }}</div>
         </div>
       }
     </div>    

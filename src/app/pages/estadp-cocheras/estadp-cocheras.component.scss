@@ -2,8 +2,6 @@
 @use"./../../../../public/styles/tabla.scss";
 
 
-
-
 header {
   background-color: colores.$color-titulos;
   padding: 10px;
@@ -46,6 +44,7 @@ header {
 #tabla {
   margin: 2rem;
   border-radius: 8px;
+  font-family: sans-serif;
   overflow: hidden;
   box-shadow: 0 0 10px colores.$color-texto;
 
@@ -68,6 +67,7 @@ header {
     grid-template-columns: 1fr 2fr 2fr 2fr;
     padding: 1rem;
     font-size: 16px;
+    font-family: sans-serif;
     border: none;
     border-bottom: 1px solid colores.$color-texto;
     width: 100%;

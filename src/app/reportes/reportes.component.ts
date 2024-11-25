@@ -1,11 +1,9 @@
-
 import { Component, inject, OnInit } from '@angular/core';
 import { EstacionamientoService } from '../serive/estacionamiento.service';
 import { ReporteMensual } from '../interfaces/reportes';
-import { Estacionamiento } from '../interfaces/estacionamiento';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../serive/auth.service';
+import { CocherasService } from '../serive/cocheras.service';
 
 
 @Component({
@@ -15,52 +13,60 @@ import { AuthService } from '../serive/auth.service';
   templateUrl: './reportes.component.html',
   styleUrl: './reportes.component.scss'
 })
-
 export class ReportesComponent implements OnInit {
-
-  estacionamientos = inject(EstacionamientoService);
-  auth=inject(AuthService)
-  reporteEstacionamientos: ReporteMensual[] = [];
-
-  ngOnInit() {
-    this.estacionamientoTraerlo();
-  }
+    titulo: string = "Estado de la cochera";
+    header: {mes: string, usos: string, cobrado: string } = {
+      mes: "Mes",
+      usos: 'Usos',
+      cobrado: 'Cobrado',
+    };
   
-  estacionamientoTraerlo() {
-    
-    this.estacionamientos.estacionamientos().then(estacionadas => {
-      const historialEstacionamientos = estacionadas.filter(estacionada => estacionada.horaEgreso != null);
-  
-      let mesesTrabajo: string[] = [];
-      let meses = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+    reportes: ReporteMensual[] = [];
+    cochera = inject(CocherasService);
+    estacionamientos = inject(EstacionamientoService);
 
-      
-      for (let estacionada of historialEstacionamientos) {
-        const estacionadaConDate = { ...estacionada, horaIngreso: new Date(estacionada.horaIngreso) };
-        const periodo = meses[estacionadaConDate.horaIngreso.getMonth()] + " " + estacionadaConDate.horaIngreso.getFullYear();
-        if (!mesesTrabajo.includes(periodo)) {
-          mesesTrabajo.push(periodo);
-          this.reporteEstacionamientos.push({
-            nro: this.reporteEstacionamientos.length + 1,
-            mes: periodo,
-            usos: 1,
-            cobrado: estacionada.costo ?? 0
+    ngOnInit(){
+      this.traerEstacionamientos().then(res => {
+        this.reportes = res;
+        console.log(res)
+      })
+  
+    };
+  
+    traerCocherasById(id: number){
+      this.cochera.getCocherasById(id).then(cochera => {
+        console.log(cochera)
+      })
+    };
+  
+    //<Estacionamiento[]>//
+    async traerEstacionamientos(){
+       const estacionamientos = await this.estacionamientos.estacionamientos();
+      let reportes: ReporteMensual[] = [];
+
+      for (let estacionamiento of estacionamientos) {
+        if (estacionamiento.horaEgreso !== null) {
+          let fecha = new Date(estacionamiento.horaEgreso);
+          let mes = fecha.toLocaleDateString("es-Cl", {
+            month: "numeric",
+            year: "numeric",
           });
-        } else {
-          const reporte = this.reporteEstacionamientos.find(r => r.mes === periodo)!;
-          reporte.usos++;
-          reporte.cobrado += estacionada.costo ?? 0;
+          const indiceMes = reportes.findIndex((res) => res.mes === mes);
+          const costo = estacionamiento.costo ?? 0; // Manejo de valor nulo
+          if (indiceMes === -1) {
+            reportes.push({
+              mes: mes,
+              usos: 1,
+              cobrados: costo,
+            });
+          } else {
+            reportes[indiceMes].usos = +1;
+            reportes[indiceMes].cobrados += costo;
+          }
         }
       }
-
-    })
-  }
+      return reportes;
+      };
+    }
   
-}
-
-
-
-
-
-
   
