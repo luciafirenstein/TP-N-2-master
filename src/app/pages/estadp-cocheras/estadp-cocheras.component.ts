@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { Cochera } from '../../interfaces/cocheras';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../serive/auth.service';
@@ -33,11 +33,12 @@ siguienteNumero: number = 1;
 auth=inject(AuthService);
 estacionamientos=inject(EstacionamientoService);
 cocheras=inject(CocherasService);
+router= inject(Router);
+
 
 ngOnInit(): void {
   this.traerCocheras();
 }
-
 
 async traerCocheras() {
   try {
@@ -60,30 +61,17 @@ async traerCocheras() {
   }
 }
 
-agregarFila() {
-  Swal.fire({
-    title: '¿Deseas agregar una nueva cochera?',
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonText: 'Sí, agregar',
-    cancelButtonText: 'Cancelar'
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const nuevaCochera = {
-        id: this.siguienteNumero,
-        descripcion: `Cochera ${this.siguienteNumero}`,
-        deshabilitada: false,
-        eliminada: false,
-        activo: null
-      };
-      
-      this.filas.push(nuevaCochera);
-      this.siguienteNumero += 1;
-      this.sortCocheras();
-      Swal.fire('¡Listo!', 'La cochera ha sido agregada', 'success');
-    }
+agregarFila(){
+  this.filas.push({
+    id: this.siguienteNumero,
+    descripcion: '',
+    deshabilitada: false,
+    eliminada: false,
+    activo: null
   });
-}
+  this.siguienteNumero +=1;
+ };
+
 
   /** Elimina la fila de la cochera seleccionada */
   eliminarFilaModal(cocheraId: number, event: Event) {
@@ -94,7 +82,6 @@ agregarFila() {
       Swal.fire('Advertencia', 'No se puede eliminar una cochera ocupada', 'warning');
       return;
     }
-
     Swal.fire({
       title: '¿Estás seguro que quieres borrar la cochera?',
       text: 'Esta acción no se puede deshacer.',
@@ -118,12 +105,12 @@ agregarFila() {
 
   cambiarDisponibilidadCochera(cocheraId: number, event: Event) {
     event.stopPropagation();
-    const cochera = this.filas.find(c => c.id === cocheraId);
-    if (cochera?.activo) {
-      this.cerrarModalEstacionamiento(cocheraId, cochera.activo.patente);
+    if(this.filas[cocheraId].deshabilitada === true){
+      this.filas[cocheraId].deshabilitada = false;
     } else {
-      this.abrirModalNuevoEstacionamiento(cocheraId);
+      this.filas[cocheraId].deshabilitada = true;
     }
+
   }
 
   abrirModalNuevoEstacionamiento(idCochera: number) {
@@ -150,39 +137,33 @@ agregarFila() {
       }
     });
   }
-        
-
-
-  cerrarModalEstacionamiento(idCochera: number, patente: string) {
-    Swal.fire({
-      title: '¿Deseas cerrar el estacionamiento?',
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Cerrar'
-    }).then((res) => {
-      if (res.isConfirmed) {
-        this.estacionamientos.cerrarEstacionamiento(patente, idCochera)
-          .then((r) => {
-            if (!r.ok) throw new Error("Error en la respuesta del servidor");
-            return r.json();
+  cerrarModalEstacionamiento(idCochera: number) {
+    const fila = this.filas.find((fila) => fila.id === idCochera)!;
+    this.estacionamientos.cerrarEstacionamiento(fila.activo?.patente!).then((res) => {
+      return Swal.fire({
+        title: "Cobro cochera",
+        text: `El precio a cobrar por el tiempo estacionado de la cochera ${idCochera} es $${res.costo}`,
+        icon: "info",
+        confirmButtonText: "Cobrar"
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const Toast = Swal.mixin({
+            toast: true,
+            showConfirmButton: false,
+            timer: 2000,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+              toast.onmouseenter = Swal.stopTimer;
+              toast.onmouseleave = Swal.resumeTimer;
+            }
           })
-          .then((rJson) => {
-            const costo = rJson.costo;
-            this.traerCocheras();
-            Swal.fire({
-                title: 'La cochera ha sido cerrada',
-                text: `El precio a cobrar es ${costo}`,
-                icon: 'info'
-            });
-          });
         }
-      });
-    }
+      }).then(() => this.traerCocheras()).then(()=> this.siguienteNumero+=1);
+    })
+  }
+   
   
-
-
+      
 sortCocheras(){
   this.filas.sort((a,b)=> a.id > b.id ? 1 : -1)
 }

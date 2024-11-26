@@ -18,7 +18,8 @@ export class EstacionamientoService {
     }
   
     async buscarEstacionamientoActivo(cocheraId:number){
-      const estacionamientos = await this.estacionamientos();
+      return this.estacionamientos().then(estacionamientos=> {
+
       let buscado = null;
       for (let estacionamiento of estacionamientos) {
         if (estacionamiento.idCochera === cocheraId &&
@@ -27,7 +28,22 @@ export class EstacionamientoService {
         }
       }
       return buscado;
-     }
+     });
+    }
+
+     async traerEstacionamientoPorCochera(cocheraId:number){
+      return this.estacionamientos().then(estacionamientos=> {
+       let buscado = null;
+       for (let estacionamiento of estacionamientos) {
+         if (estacionamiento.idCochera === cocheraId &&
+           estacionamiento.horaEgreso != null) {
+           buscado = estacionamiento;
+         }
+       }
+       return buscado;
+     });
+}
+
       /**abre un estacionamiento con una patente sobre una cochera en particular */
    async estacionarAuto(patenteAuto:string, idCochera:number){
     const r = await fetch('http://localhost:4000/estacionamientos/abrir', {
@@ -44,7 +60,7 @@ export class EstacionamientoService {
      });
      return await r.json();
    }
-   cerrarEstacionamiento(patenteAuto: string, cocheraId: number) {
+   cerrarEstacionamiento(patenteAuto: string) {
     return fetch("http://localhost:4000/estacionamientos/cerrar", { 
       method: "PATCH",
       headers: {
@@ -55,13 +71,16 @@ export class EstacionamientoService {
         patente: patenteAuto,
         idUsuarioIngreso: "admin"
       })
-    });
+    }).then(res => res.json());
   }
-  async obtenerMontoAPagar(patente: string) {
-    const res = await fetch(`http://localhost:4000/estacionamientos/monto/${patente}`);
-    const data = await res.json();
-    return data.monto;
-  }
+  obtenerMontoAPagar(idCochera: number):
+  Promise<Estacionamiento>{
+    return fetch(`http://localhost:4000/estacionamientos/${idCochera}`,{
+      method: "GET",
+    }).then(res => res.json());
+    }
+    
+ 
   
   // Liberar cochera
   async liberarCochera(idCochera: number, patente: string) {

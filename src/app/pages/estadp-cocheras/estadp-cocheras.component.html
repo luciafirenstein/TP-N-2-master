@@ -18,7 +18,7 @@
           <div>{{fila.id}}</div>
           
           @if (fila.activo) {
-            <div (click)="cerrarModalEstacionamiento(fila.id, fila.activo.patente)">
+            <div (click)="cerrarModalEstacionamiento(fila.id)">
               <span class="patente-activa">{{fila.activo.patente}}</span>
             </div>
           } @else if (fila.deshabilitada) {
