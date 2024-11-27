@@ -119,12 +119,12 @@ async traerCocheras() {
 
   cambiarDisponibilidadCochera(cocheraId: number, event: Event) {
     event.stopPropagation();
-    if(this.filas[cocheraId].deshabilitada === true){
-      this.filas[cocheraId].deshabilitada = false;
+    const cochera = this.filas.find(c => c.id === cocheraId);
+    if (cochera) {
+      cochera.deshabilitada = !cochera.deshabilitada;
     } else {
-      this.filas[cocheraId].deshabilitada = true;
+      console.error(`Cochera con ID ${cocheraId} no encontrada.`);
     }
-
   }
 
   abrirModalNuevoEstacionamiento(idCochera: number) {
