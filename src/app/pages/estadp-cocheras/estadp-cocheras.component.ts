@@ -37,6 +37,7 @@ router= inject(Router);
 
 
 ngOnInit(): void {
+  this.cocheras.precio();
   this.traerCocheras();
 }
 
@@ -61,16 +62,11 @@ async traerCocheras() {
   }
 }
 
-agregarFila(){
-  this.filas.push({
-    id: this.siguienteNumero,
-    descripcion: '',
-    deshabilitada: false,
-    eliminada: false,
-    activo: null
-  });
-  this.siguienteNumero +=1;
- };
+
+
+ agregarFila() {
+    this.cocheras.crearCochera().then(()=>this.traerCocheras());
+  };
 
 
   /** Elimina la fila de la cochera seleccionada */
@@ -82,6 +78,7 @@ agregarFila(){
       Swal.fire('Advertencia', 'No se puede eliminar una cochera ocupada', 'warning');
       return;
     }
+    
     Swal.fire({
       title: '¿Estás seguro que quieres borrar la cochera?',
       text: 'Esta acción no se puede deshacer.',
@@ -91,12 +88,29 @@ agregarFila(){
       cancelButtonText: 'Cancelar'
     }).then((result) => {
       if (result.isConfirmed) {
-        this.cocheras.eliminarCochera(cocheraId).then(() => {
-          this.traerCocheras();
+        // Use the fetch method you already have to delete the cochera
+        fetch('http://localhost:4000/cocheras/' + cocheraId, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': 'Bearer ' + this.auth.getToken(),
+          },
+        }).then(() => {
+          // Refresh the cocheras list after deletion
+          this.traerCocheras().then(() => {
+            this.sortCocheras();
+            
+            Swal.fire({
+              title: "Listo!",
+              text: "La cochera fue eliminada con éxito.",
+              icon: "success"
+            });
+          });
+        }).catch(error => {
+          console.error('Error al eliminar cochera:', error);
           Swal.fire({
-            title: "Listo!",
-            text: "La cochera fue eliminada con éxito.",
-            icon: "success"
+            title: "Error",
+            text: "No se pudo eliminar la cochera.",
+            icon: "error"
           });
         });
       }
@@ -139,31 +153,66 @@ agregarFila(){
   }
   cerrarModalEstacionamiento(idCochera: number) {
     const fila = this.filas.find((fila) => fila.id === idCochera)!;
-    this.estacionamientos.cerrarEstacionamiento(fila.activo?.patente!).then((res) => {
-      return Swal.fire({
-        title: "Cobro cochera",
-        text: `El precio a cobrar por el tiempo estacionado de la cochera ${idCochera} es $${res.costo}`,
-        icon: "info",
-        confirmButtonText: "Cobrar"
-      }).then((result) => {
-        if (result.isConfirmed) {
-          const Toast = Swal.mixin({
-            toast: true,
-            showConfirmButton: false,
-            timer: 2000,
-            timerProgressBar: true,
-            didOpen: (toast) => {
-              toast.onmouseenter = Swal.stopTimer;
-              toast.onmouseleave = Swal.resumeTimer;
-            }
+    
+    Swal.fire({
+      title: "Cerrar Estacionamiento",
+      text: "¿Está seguro que desea cerrar este estacionamiento?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, cerrar",
+      cancelButtonText: "Cancelar"
+    }).then((closeConfirmation) => {
+      if (closeConfirmation.isConfirmed) {
+        return this.estacionamientos.obtenerMontoAPagar(idCochera)
+          .then((res) => {
+            const costo = res.costo ?? 0; // Si `res.costo` es null, asignar 0 como valor predeterminado.
+            return Swal.fire({
+              title: "Cobro cochera",
+              text: `El precio a cobrar por el tiempo estacionado de la cochera ${idCochera} es $${res.costo}`,
+              icon: "info",
+              confirmButtonText: "Cobrar"
+            });
           })
-        }
-      }).then(() => this.traerCocheras()).then(()=> this.siguienteNumero+=1);
-    })
-  }
-   
-  
-      
+          .then((result) => {
+            if (result.isConfirmed) {
+              const Toast = Swal.mixin({
+                toast: true,
+                showConfirmButton: false,
+                timer: 2000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                  toast.onmouseenter = Swal.stopTimer;
+                  toast.onmouseleave = Swal.resumeTimer;
+                }
+              });
+    
+              Toast.fire({
+                icon: 'success',
+                title: 'Cobro realizado exitosamente'
+              });
+    
+              return this.estacionamientos.cerrarEstacionamiento(fila.activo?.patente!)
+                .then(() => this.traerCocheras())
+                .then(() => {
+                  this.siguienteNumero += 1;
+                });
+            }
+            return Promise.resolve(); // Manejar el caso en que no se confirme
+          })
+          .catch((error) => {
+            Swal.fire({
+              title: "Error",
+              text: "No se pudo procesar el cobro",
+              icon: "error"
+            });
+            console.error("Error al procesar el cobro:", error);
+            return Promise.resolve(); // Asegurar un valor de retorno en el bloque catch
+          });
+      }
+      return Promise.resolve(); // Manejar el caso en que no se confirme
+    });
+  }
+     
 sortCocheras(){
   this.filas.sort((a,b)=> a.id > b.id ? 1 : -1)
 }

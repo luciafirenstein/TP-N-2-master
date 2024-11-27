@@ -20,6 +20,27 @@ export class CocherasService {
     });
     return await r.json();
   }
+
+crearCochera(){
+  return fetch('http://localhost:4000/cocheras/', {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + this.auth.getToken(),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ descripcion: "Agregada por API" })
+})}
+
+precio(){
+  return fetch('http://localhost:4000/tarifas/',{
+    method: 'GET',
+    headers: {
+      'Authorization': 'Bearer ' + this.auth.getToken(),
+      'Content-Type': 'application/json',
+  },
+})}
+
+
   habilitar(cochera: Cochera) {
     if (!cochera.deshabilitada) return Promise.resolve();
 

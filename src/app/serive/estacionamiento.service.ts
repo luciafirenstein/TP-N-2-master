@@ -44,6 +44,7 @@ export class EstacionamientoService {
      });
 }
 
+
       /**abre un estacionamiento con una patente sobre una cochera en particular */
    async estacionarAuto(patenteAuto:string, idCochera:number){
     const r = await fetch('http://localhost:4000/estacionamientos/abrir', {
@@ -69,7 +70,7 @@ export class EstacionamientoService {
       },
       body: JSON.stringify({
         patente: patenteAuto,
-        idUsuarioIngreso: "admin"
+        idUsuarioEgreso: "admin"
       })
     }).then(res => res.json());
   }
@@ -77,6 +78,10 @@ export class EstacionamientoService {
   Promise<Estacionamiento>{
     return fetch(`http://localhost:4000/estacionamientos/${idCochera}`,{
       method: "GET",
+      headers: {
+        Authorization: "Bearer " + (this.auth.getToken() ?? ""),
+        "content-type": "application/json"
+      },
     }).then(res => res.json());
     }
     
