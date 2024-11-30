@@ -116,16 +116,18 @@ async traerCocheras() {
       }
     });
   }
-
-  cambiarDisponibilidadCochera(cocheraId: number, event: Event) {
-    event.stopPropagation();
-    const cochera = this.filas.find(c => c.id === cocheraId);
-    if (cochera) {
-      cochera.deshabilitada = !cochera.deshabilitada;
+  cambiarEstadoCochera(cochera: Cochera) {
+    if (!cochera.deshabilitada) {
+      this.cocheras.deshabilitar(cochera).then(() => {
+        cochera.deshabilitada = true;
+      });
     } else {
-      console.error(`Cochera con ID ${cocheraId} no encontrada.`);
+      this.cocheras.habilitar(cochera).then(() => {
+        cochera.deshabilitada = false;
+      });
     }
   }
+  
 
   abrirModalNuevoEstacionamiento(idCochera: number) {
     Swal.fire({

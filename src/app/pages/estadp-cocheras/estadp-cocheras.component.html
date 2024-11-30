@@ -34,7 +34,7 @@
           <div>{{fila.activo?.horaIngreso}}</div>
           
           <div class="acciones-container">
-            <button (click)="cambiarDisponibilidadCochera(fila.id, $event)" [disabled]="fila.activo">
+            <button (click)="cambiarEstadoCochera(fila)" [disabled]="fila.activo">
               <img src="imagenes/prohibido.png" alt="Cambiar disponibilidad" title="Cambiar disponibilidad">
             </button>
             <button (click)="eliminarFilaModal(fila.id, $event)" [disabled]="fila.activo">

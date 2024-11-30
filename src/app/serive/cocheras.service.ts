@@ -42,7 +42,6 @@ precio(){
 
 
   habilitar(cochera: Cochera) {
-    if (!cochera.deshabilitada) return Promise.resolve();
 
     return fetch(`http://localhost:4000/cocheras/${cochera.id}/enable`, {
         method: 'POST',
